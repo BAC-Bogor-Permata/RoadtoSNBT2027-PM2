@@ -1,0 +1,1765 @@
+2<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Road to SNBT 2027 | BAC Bogor - Permata</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- MathJax Configuration and Script for LaTeX rendering -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .footer-text {
+      font-size: 9pt; /* Sesuai instruksi 9pt */
+      line-height: 1.25rem;
+    }
+    .transition-all-200 {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Pulse warning animation for low time */
+    @keyframes pulseWarning {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .timer-warning {
+      animation: pulseWarning 1s infinite;
+    }
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-blue-100 selection:text-blue-900">
+
+  <!-- Top Navigation / Application Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-700 to-blue-500 flex items-center justify-center text-white shadow-sm font-black text-lg">
+          B
+        </div>
+        <div>
+          <!-- Header Kiri Sesuai Ketentuan -->
+          <p class="font-bold text-slate-900 text-sm sm:text-base leading-tight tracking-tight">
+            BAC Bogor - Permata <span class="text-blue-600 font-semibold">(Road to SNBT 2027)</span>
+          </p>
+          <p class="text-xs text-slate-400">Subtes: Penalaran Matematika (Bilangan)</p>
+        </div>
+      </div>
+      
+      <!-- Right Header Actions (Countdown Timer & Autosave Status) -->
+      <div id="headerProgressContainer" class="hidden items-center space-x-2 sm:space-x-3">
+        <!-- Badge Identitas Siswa -->
+        <div id="headerStudentBadge" class="hidden md:flex items-center gap-2 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold">
+          <i class="fa-solid fa-user-graduate text-blue-600"></i>
+          <span id="headerStudentInfo">-</span>
+        </div>
+
+        <!-- Indikator Autosave Status -->
+        <div id="autosaveIndicator" class="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 px-2 py-1 rounded bg-slate-50 border border-slate-200" title="Progres Anda tersimpan otomatis secara real-time">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span class="text-[11px] font-medium text-slate-500">Autosave</span>
+        </div>
+
+        <!-- Timer 15 Menit Countdown -->
+        <div id="timerContainer" class="flex items-center space-x-2 bg-blue-50 text-blue-800 px-3 py-1.5 rounded-lg border border-blue-200 text-xs sm:text-sm font-bold tracking-wider">
+          <i class="fa-regular fa-clock text-blue-600" id="timerIcon"></i>
+          <span id="testTimer">15:00</span>
+        </div>
+
+        <!-- Tombol Selesai Ujian -->
+        <button onclick="confirmFinishExam()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs sm:text-sm shadow-xs transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-flag-checkered"></i>
+          <span class="hidden sm:inline">Selesai Latihan</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col justify-start">
+
+    <!-- ========================================== -->
+    <!-- SECTION 1: WELCOMING PAGE                  -->
+    <!-- ========================================== -->
+    <section id="welcomeSection" class="w-full max-w-3xl mx-auto my-auto py-4">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <!-- Top decorative banner -->
+        <div class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-8 sm:p-10 text-white text-center relative overflow-hidden">
+          <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-white/10 rounded-full blur-2xl"></div>
+          <div class="absolute -left-10 -top-10 w-44 h-44 bg-blue-400/20 rounded-full blur-2xl"></div>
+          
+          <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs uppercase tracking-wider font-semibold text-blue-50 mb-3 border border-white/20">
+            Simulasi Mandiri Berstandar SNPMB
+          </span>
+          <!-- Judul Sesuai Ketentuan: Berwarna biru (atau kontras tajam di kartu putih), bold, sans serif -->
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-2 text-white">
+            Road to SNBT 2027
+          </h1>
+          <p class="text-blue-100 text-sm sm:text-base font-normal max-w-xl mx-auto">
+            Latihan Mingguan Penalaran Matematika: Penguasaan Konsep Bilangan, Rasio, & Aritmetika Terapan
+          </p>
+        </div>
+
+        <!-- Deadline Notice Alert (Dikonfigurasi otomatis melalui kode) -->
+        <div id="deadlineNoticeBanner" class="hidden p-4 border-b">
+          <!-- Dinamis diatur oleh fungsi checkExamPeriod() -->
+        </div>
+
+        <!-- Content Body with Rules -->
+        <div class="p-6 sm:p-8 space-y-6">
+          <div class="border-b border-slate-100 pb-5">
+            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-blue-600"></i>
+              Aturan Pengerjaan Soal Latihan
+            </h2>
+            <div class="mt-4 space-y-3">
+              <div class="flex items-start gap-3 p-3.5 bg-blue-50/60 rounded-xl border border-blue-100/70">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">1</span>
+                <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                  Latihan akan terbuka untuk dikerjakan selama periode <span class="font-bold text-blue-900">6 - 12 Oktober 2026</span>.
+                </p>
+              </div>
+
+              <div class="flex items-start gap-3 p-3.5 bg-amber-50/70 rounded-xl border border-amber-200/70">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-amber-600 text-white font-bold text-xs flex items-center justify-center">2</span>
+                <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                  <span class="font-bold text-amber-950">Jawaban hanya bisa diklik 1 kali ya</span> dan pembahasan soal akan muncul setelah periode latihan berakhir. Pilihan jawaban Anda akan langsung terverifikasi berwarna hijau (jika benar) atau merah (jika salah).
+                </p>
+              </div>
+
+              <div class="flex items-start gap-3 p-3.5 bg-emerald-50/60 rounded-xl border border-emerald-100/70">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">3</span>
+                <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                  Pada akhir latihan ini, siswa dapat langsung melihat <span class="font-bold text-emerald-950">skor akhir dan analisisnya</span>. Waktu pengerjaan dialokasikan selama <span class="font-bold text-emerald-950">15 menit</span> terhitung sejak soal dibuka.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Motivational Quote Sesuai Ketentuan -->
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 p-4 rounded-r-xl">
+            <p class="text-sm sm:text-base font-semibold text-blue-900 italic">
+              "Semangat terus ya, Brainies! Kita berikan usaha yang maksimal untuk hasil yang terbaik ya teman-teman."
+            </p>
+            <p class="text-xs text-blue-700 font-medium mt-1">
+              — Tim Akademik Brain Academy Bogor Permata
+            </p>
+          </div>
+
+          <!-- Resume Session Notification Card (Jika ada sesi autosave aktif) -->
+          <div id="resumeSessionCard" class="hidden p-4 rounded-xl bg-blue-50 border border-blue-200 text-sm">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-clock-rotate-left text-blue-600 text-base"></i>
+                <div>
+                  <p class="font-bold text-blue-900">Sesi Latihan Sebelumnya Ditemukan</p>
+                  <p class="text-xs text-blue-700" id="resumeSessionDetails">Lanjutkan dengan sisa waktu yang tersedia.</p>
+                </div>
+              </div>
+              <button onclick="resumeExistingExam()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-xs transition-colors">
+                Lanjutkan
+              </button>
+            </div>
+          </div>
+
+          <!-- Student Identity Form (Nama Lengkap & Dropdown Kelas) -->
+          <div id="identityFormContainer" class="pt-2 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <!-- Nama Lengkap Siswa -->
+              <div class="sm:col-span-2">
+                <label for="studentNameInput" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <i class="fa-solid fa-user text-blue-600"></i>
+                  <span>Nama Lengkap Siswa:</span>
+                  <span class="text-rose-500">*</span>
+                </label>
+                <input type="text" id="studentNameInput" placeholder="Masukkan nama lengkap Anda..."
+                  class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none text-sm transition-all bg-white" required>
+              </div>
+
+              <!-- Dropdown Kelas Sesuai Ketentuan -->
+              <div class="sm:col-span-1">
+                <label for="studentClassSelect" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <i class="fa-solid fa-chalkboard-user text-blue-600"></i>
+                  <span>Kelas:</span>
+                  <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                  <select id="studentClassSelect"
+                    class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none text-sm transition-all bg-white text-slate-800 appearance-none cursor-pointer" required>
+                    <option value="" disabled selected>-- Pilih Kelas --</option>
+                    <option value="12 IPA 1">12 IPA 1</option>
+                    <option value="12 IPA 2">12 IPA 2</option>
+                    <option value="12 IPS 1">12 IPS 1</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-500">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <button id="btnStartExam" onclick="startExercise()" class="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+              <span>Mulai Kerjakan Soal Latihan (15 Menit)</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 2: EXAM WORKSPACE                  -->
+    <!-- ========================================== -->
+    <section id="examSection" class="hidden w-full flex-col space-y-6">
+      
+      <!-- Nomor Soal Navigation Header (Non-sequential access) -->
+      <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-200">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-3 border-b border-slate-100">
+          <div>
+            <h3 class="text-xs font-bold tracking-wider text-slate-500 uppercase">Navigasi Nomor Soal</h3>
+            <p class="text-xs text-slate-400">Pilih nomor untuk melompat langsung ke soal yang diinginkan tanpa harus berurutan</p>
+          </div>
+          <!-- Legend Status -->
+          <div class="flex items-center flex-wrap gap-3 text-xs">
+            <span class="flex items-center gap-1.5 text-slate-600">
+              <span class="w-3 h-3 rounded-full bg-slate-200 border border-slate-300"></span> Belum
+            </span>
+            <span class="flex items-center gap-1.5 text-emerald-700">
+              <span class="w-3 h-3 rounded-full bg-emerald-500"></span> Benar
+            </span>
+            <span class="flex items-center gap-1.5 text-rose-700">
+              <span class="w-3 h-3 rounded-full bg-rose-500"></span> Salah
+            </span>
+            <span class="flex items-center gap-1.5 text-blue-700">
+              <span class="w-3 h-3 rounded-full ring-2 ring-blue-600 bg-white"></span> Aktif
+            </span>
+          </div>
+        </div>
+
+        <!-- Question Bubbles 1 - 10 -->
+        <div id="questionNumberNav" class="grid grid-cols-5 sm:grid-cols-10 gap-2">
+          <!-- Dynamically generated button grid 1-10 -->
+        </div>
+      </div>
+
+      <!-- Main Question Container (Passage & Question Card) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Left Column: Reading Stimulus / Teks Wacana -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-xs border border-slate-200 sticky top-20 max-h-[80vh] overflow-y-auto">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <span id="passageBadge" class="text-xs font-bold px-2.5 py-1 bg-blue-100 text-blue-800 rounded-md">
+              Teks 1 (Soal 1 - 2)
+            </span>
+            <span class="text-xs text-slate-400 font-medium">Stimulus Konteks</span>
+          </div>
+          <h4 id="passageTitle" class="font-bold text-slate-900 text-base mb-3 leading-snug">
+            Judul Teks
+          </h4>
+          <div id="passageContent" class="text-sm text-slate-700 leading-relaxed space-y-3 text-justify">
+            <!-- Isi Teks Bacaan dari PDF -->
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive Question & Response Area -->
+        <div class="lg:col-span-7 bg-white p-6 sm:p-7 rounded-2xl shadow-xs border border-slate-200">
+          <!-- Question Header Badge -->
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span id="questionNumBadge" class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-sm flex items-center justify-center">
+                1
+              </span>
+              <span id="questionTypeBadge" class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">
+                Pilihan Ganda Tunggal
+              </span>
+            </div>
+            <!-- Answer Lock Status Tag -->
+            <div id="questionStatusIndicator" class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600">
+              Belum Dijawab
+            </div>
+          </div>
+
+          <!-- Question Prompt -->
+          <div id="questionPrompt" class="text-slate-900 font-semibold text-base mb-6 leading-relaxed">
+            <!-- Pertanyaan Soal -->
+          </div>
+
+          <!-- Dynamic Answers Container -->
+          <div id="optionsContainer" class="space-y-3 mb-8">
+            <!-- Pilihan Ganda / Isian / Tabel Benar-Salah di-generate secara dinamis -->
+          </div>
+
+          <!-- Question Foot Navigation Bar (Previous, Next, Finish) -->
+          <div class="flex items-center justify-between pt-5 border-t border-slate-100">
+            <button id="btnPrev" onclick="navigateQuestion(-1)" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-medium text-sm flex items-center gap-2 transition-all">
+              <i class="fa-solid fa-chevron-left text-xs"></i>
+              <span>Sebelumnya</span>
+            </button>
+
+            <div class="flex items-center gap-2">
+              <button id="btnNext" onclick="navigateQuestion(1)" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm flex items-center gap-2 transition-all">
+                <span>Selanjutnya</span>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 3: CLOSING & DETAILED ANALYSIS     -->
+    <!-- ========================================== -->
+    <section id="resultSection" class="hidden w-full max-w-4xl mx-auto py-2 space-y-6">
+      
+      <!-- Top Score Hero Card -->
+      <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-800 via-blue-700 to-indigo-900 p-8 sm:p-10 text-white relative">
+          <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs uppercase tracking-wider font-semibold text-blue-100 mb-2">
+                Hasil Latihan Mandiri SNBT 2027
+              </span>
+              <h2 id="resultStudentName" class="text-2xl sm:text-3xl font-extrabold text-white">
+                Analisis Capaian Belajar Brainies
+              </h2>
+              <p class="text-blue-100 text-sm mt-1">
+                Latihan Mingguan PM: Subtes Bilangan • Brain Academy Bogor Permata
+              </p>
+              <div class="mt-3 flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur-sm border border-white/25 rounded-lg text-xs font-semibold text-white">
+                  <i class="fa-solid fa-user-graduate"></i>
+                  <span id="resultStudentText">-</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/15 backdrop-blur-sm border border-white/25 rounded-lg text-xs font-semibold text-white">
+                  <i class="fa-solid fa-chalkboard-user"></i>
+                  <span id="resultClassText">-</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/30 backdrop-blur-sm border border-emerald-400/40 rounded-lg text-xs font-semibold text-emerald-100">
+                  <i class="fa-solid fa-check-double"></i>
+                  <span>1 Kali Pengerjaan Selesai</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Big Final Score Badge (100 Poin Skala Maksimal) -->
+            <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-5 rounded-2xl text-center min-w-[180px] shadow-inner">
+              <p class="text-xs uppercase font-bold text-blue-200 tracking-wider">Skor Total</p>
+              <div class="text-5xl font-black text-white my-1" id="totalScoreText">
+                0
+              </div>
+              <p class="text-xs text-blue-100">dari total nilai 100</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metrics Cards Row -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-slate-100 bg-slate-50/50 border-b border-slate-100">
+          <div class="p-4 sm:p-5 text-center">
+            <span class="text-xs text-slate-500 font-medium">Jumlah Benar</span>
+            <p id="correctCountText" class="text-2xl font-bold text-emerald-600 mt-1">0</p>
+            <span class="text-xs text-slate-400">dari 10 nomor</span>
+          </div>
+          <div class="p-4 sm:p-5 text-center">
+            <span class="text-xs text-slate-500 font-medium">Jumlah Salah</span>
+            <p id="incorrectCountText" class="text-2xl font-bold text-rose-600 mt-1">0</p>
+            <span class="text-xs text-slate-400">dari 10 nomor</span>
+          </div>
+          <div class="p-4 sm:p-5 text-center">
+            <span class="text-xs text-slate-500 font-medium">Akurasi Pengerjaan</span>
+            <p id="accuracyPercentText" class="text-2xl font-bold text-blue-700 mt-1">0%</p>
+            <span class="text-xs text-slate-400">tingkat ketepatan</span>
+          </div>
+          <div class="p-4 sm:p-5 text-center">
+            <span class="text-xs text-slate-500 font-medium">Sisa Waktu</span>
+            <p id="remainingTimeText" class="text-2xl font-bold text-slate-700 mt-1">00:00</p>
+            <span class="text-xs text-slate-400">dari kuota 15 menit</span>
+          </div>
+        </div>
+
+        <!-- In-depth Diagnostic Analysis Per Topic Area -->
+        <div class="p-6 sm:p-8 space-y-6">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">
+                Peta Analisis Latihan Soal & Rekomendasi Konsultasi
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Format Rekapitulasi: <span class="font-semibold text-slate-700 font-mono text-[11px]" id="recapFormatPreview">-</span>
+              </p>
+            </div>
+            <button onclick="window.print()" class="no-print hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50">
+              <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+            </button>
+          </div>
+
+          <!-- Submission Status Notification (Connecting to Google Sheet) -->
+          <div id="sheetSyncNotice" class="p-3.5 rounded-xl text-xs font-medium flex items-center justify-between bg-slate-50 border border-slate-200">
+            <div class="flex items-center gap-2">
+              <i id="sheetSyncIcon" class="fa-solid fa-circle-notch fa-spin text-blue-600"></i>
+              <span id="sheetSyncText">Mengirim laporan pengerjaan ke Spreadsheet PM2...</span>
+            </div>
+          </div>
+
+          <div id="topicAnalysisContainer" class="space-y-4">
+            <!-- Diagnostic Cards for Subtopics inserted here -->
+          </div>
+
+          <!-- Action Footers -->
+          <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 no-print">
+            <div class="text-xs text-slate-500 text-center sm:text-left">
+              <p><i class="fa-solid fa-lock text-slate-400 mr-1"></i>Sistem 1 kali pengerjaan aktif. Pembahasan soal akan terbuka setelah periode 11 Oktober 2026 berakhir.</p>
+            </div>
+            <a id="whatsappConsultBtn" href="https://wa.me/?text=Halo%20Kak%20Pengajar%20Brain%20Academy%20Bogor%20Permata,%20saya%20sudah%20menyelesaikan%20Latihan%20Mingguan%20PM%20Bilangan%20dan%20ingin%20konsultasi%20materi." target="_blank" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-xs transition-all flex items-center justify-center gap-2">
+              <i class="fa-brands fa-whatsapp text-lg"></i>
+              <span>Hubungi Pengajar untuk Konsultasi</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Confirmation / Alert Modals (No alert() or confirm()) -->
+  <div id="customModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 transform transition-all">
+      <div id="modalIconContainer" class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-4 text-xl">
+        <i class="fa-solid fa-circle-question"></i>
+      </div>
+      <h3 id="modalTitle" class="text-lg font-bold text-slate-900 mb-2">Konfirmasi Tindakan</h3>
+      <p id="modalMessage" class="text-sm text-slate-600 mb-6 leading-relaxed">
+        Apakah Anda yakin ingin menyelesaikan latihan sekarang?
+      </p>
+      <div class="flex items-center justify-end space-x-3">
+        <button id="modalBtnCancel" onclick="closeModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50">
+          Batal
+        </button>
+        <button id="modalBtnConfirm" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">
+          Ya, Lanjutkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Sesuai Ketentuan -->
+  <footer class="bg-white border-t border-slate-200 py-4 px-4 sm:px-6 mt-auto">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <!-- Kalimat Footer Kiri dengan font size 9pt sesuai instruksi -->
+      <p class="footer-text text-slate-500 font-medium text-center sm:text-left">
+        Copyright © 2026 Brain Academy Bogor Permata. All rights reserved.
+      </p>
+      <p class="footer-text text-slate-400 text-center sm:text-right">
+        Persiapan Seleksi Nasional Berdasarkan Tes (SNBT 2027) • Penalaran Matematika
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // =========================================================================
+    // KONFIGURASI SISTEM DAN DEADLINE (DAPAT DIEDIT MELALUI KODE INI)
+    // =========================================================================
+    const SYSTEM_CONFIG = {
+      // 1. Google Apps Script Web App URL (Hasil Deploy script code.js untuk tab PM2)
+      // Guru / Admin cukup mengganti URL berikut setelah deploy di Google Apps Script:
+      GOOGLE_SCRIPT_WEB_APP_URL: "https://script.google.com/macros/s/AKfycbw-EGtBdojirMF1xXxNRhTqteSQRL0qvWWsQUWCgRfavABK3k1Qa9wnOwgPHcrcceL6/exec",
+
+      // 2. Durasi waktu pengerjaan: 15 menit (15 * 60 detik)
+      EXAM_DURATION_SECONDS: 15 * 60,
+
+      // 3. Konfigurasi Deadline Periode Ujian: 6 - 12 Oktober 2026
+      // Format ISO: YYYY-MM-DDTHH:mm:ss+07:00 (WIB)
+      ENABLE_DEADLINE_CHECK: true,
+      DEADLINE_START: "2026-10-06T14:00:00+07:00",
+      DEADLINE_END: "2026-10-12T07:59:59+07:00"
+    };
+
+    // =========================================================================
+    // DATABASE TEKS STIMULUS DARI DOKUMEN PDF PM2
+    // =========================================================================
+    const textsData = {
+      1: {
+        tag: "Teks 1 (Soal 1 - 2)",
+        title: "Manajemen Alokasi Panen Kopi Petani Lokal Bogor",
+        subtopicName: "Konversi Bobot & Rasio Kopi",
+        content: `
+          <p>Kelompok Tani Harapan Jaya di kawasan Sukamakmur, Kabupaten Bogor, berhasil membukukan hasil panen raya buah kopi gelondong basah (<em>coffee cherry</em>) sebanyak <strong>4.800 kg</strong> pada musim panen kali ini. Sebelum dipasarkan ke berbagai kedai kopi modern, buah kopi basah tersebut harus melewati tahapan pascapanen berupa penjemuran hingga menjadi biji kopi kering siap olah (<em>green bean</em>). Dalam tahapan ini, terjadi penyusutan bobot alami di mana berat <em>green bean</em> yang diperoleh hanya tersisa <strong>20%</strong> dari bobot total buah kopi gelondong basah awal.</p>
+          <p>Tahapan selanjutnya adalah pemanggangan (<em>roasting</em>) yang kembali mengakibatkan penyusutan bobot sebesar <strong>15%</strong> dari bobot <em>green bean</em>. Seluruh hasil biji kopi sangrai (<em>roasted bean</em>) tersebut kemudian disortir mutunya ke dalam dua kategori, yakni <strong>Kategori Premium</strong> dan <strong>Kategori Reguler</strong>, dengan perbandingan rasio bobot <strong>3 : 5</strong>. Pengurus kelompok tani perlu menghitung secara saksama proporsi hasil panen akhir guna menentukan strategi penetapan harga dan kemasan penjualan ritel.</p>
+        `
+      },
+      2: {
+        tag: "Teks 2 (Soal 3 - 5)",
+        title: "Skema Diskon Bertingkat dan Hadiah Belanja Swalayan",
+        subtopicName: "Diskon Ganda & Hadiah Belanja",
+        content: `
+          <p>Menyambut perayaan hari ulang tahun gerai, sebuah swalayan modern di Kota Bogor memberlakukan promosi khusus bertajuk <strong>"Gebyar Diskon Ganda"</strong>. Promosi ini memberlakukan potongan harga bertingkat: seluruh produk perlengkapan rumah tangga mendapatkan <strong>diskon pertama sebesar 30%</strong>, kemudian bagi konsumen yang bertransaksi menggunakan pembayaran dompet digital (<em>e-wallet</em>) resmi mitra swalayan, berhak mendapatkan <strong>diskon tambahan kedua sebesar 20%</strong> yang dihitung langsung dari harga setelah diskon pertama.</p>
+          <p>Sebagai insentif loyalitas tambahan, pihak swalayan memberikan <em>cashback</em> tunai berupa voucer belanja senilai <strong>Rp25.000 untuk setiap kelipatan total pembayaran bersih</strong> (setelah semua diskon bertingkat diterapkan) sebesar <strong>Rp200.000</strong>, dengan batas maksimum pemberian <em>cashback</em> sebesar <strong>Rp100.000</strong> per struk transaksi. Seorang pembeli, Bu Rina, berbelanja satu set perlengkapan dapur dengan total harga pada label barang sebelum diskon sebesar <strong>Rp750.000</strong> dan menyelesaikan pembayarannya menggunakan dompet digital mitra.</p>
+        `
+      },
+      3: {
+        tag: "Teks 3 (Soal 6 - 8)",
+        title: "Optimalisasi Distribusi Logistik Bencana Alam",
+        subtopicName: "Distribusi Logistik FPB & Armada",
+        content: `
+          <p>Sebuah posko tanggap darurat di Kabupaten Bogor menerima kiriman bantuan sembako dari donatur untuk disalurkan ke pemukiman warga terdampak longsor. Data rekapitulasi inventaris logistik yang masuk ke gudang posko mencakup <strong>840 kg beras super</strong>, <strong>504 liter minyak goreng</strong>, dan <strong>336 kaleng ikan sarden</strong>. Tim relawan logistik bertugas membungkus seluruh sembako tersebut menjadi paket-paket sembako keluarga yang seragam, di mana setiap paket harus berisi kombinasi ketiga jenis bahan pokok dengan jumlah yang sama persis tanpa ada satu pun bahan makanan yang tersisa.</p>
+          <p>Untuk mendistribusikan paket-paket sembako tersebut menuju pos pelayanan terpencil, posko menyewa armada transportasi lokal. Tersedia dua pilihan armada: <strong>Mobil Pick-up</strong> dengan daya angkut maksimal 25 paket per trip dengan ongkos sewa <strong>Rp110.000 per trip</strong>, serta <strong>Truk Ringan</strong> dengan daya angkut maksimal 45 paket per trip dengan ongkos sewa <strong>Rp180.000 per trip</strong>. Seluruh armada yang disewa harus mampu mengangkut paket bantuan dalam jumlah trip sesedikit dan seefisien mungkin dari segi anggaran.</p>
+        `
+      },
+      4: {
+        tag: "Teks 4 (Soal 9 - 10)",
+        title: "Pembagian Bagi Hasil dan Struktur Modal Usaha",
+        subtopicName: "Alokasi Modal & Bagi Hasil Usaha",
+        content: `
+          <p>Tiga orang wirausahawan muda, yaitu Arya, Bagas, dan Citra, mendirikan usaha katering sehat di Kota Bogor dengan menghimpun total modal awal sebesar <strong>Rp120.000.000</strong>. Komposisi penyertaan modal awal antara Arya, Bagas, dan Citra memiliki perbandingan <strong>rasio 5 : 3 : 2</strong>. Seluruh operasional berjalan profesional dengan perjanjian kontrak kerja sama tertulis mengenai alokasi keuntungan tahunan.</p>
+          <p>Berdasarkan kesepakatan akta kemitraan, setiap akhir tahun buku, laba bersih usaha terlebih dahulu disisihkan sebesar <strong>10% untuk dana cadangan pengembangan operasional</strong>. Selanjutnya, sisa laba bersih sebesar 90% dibagi menjadi dua alokasi utama:</p>
+          <ol class="list-[lower-roman] pl-5 space-y-1">
+            <li>Sebesar <strong>30% dari sisa laba</strong> dibagikan khusus kepada pengelola aktif (Arya dan Bagas) sebagai <strong>insentif manajemen harian</strong> dengan rasio pembagian <strong>3 : 2</strong>.</li>
+            <li>Sebesar <strong>70% dari sisa laba</strong> dibagikan sebagai <strong>dividen</strong> kepada seluruh pemodal (Arya, Bagas, dan Citra) secara proporsional sesuai rasio modal awal masing-masing.</li>
+          </ol>
+          <p>Pada penutupan tahun buku pertama, katering berhasil membukukan laba bersih tahunan sebesar <strong>Rp80.000.000</strong>.</p>
+        `
+      }
+    };
+
+    // Database Soal Sesuai Dokumen Latihan Mingguan PM Bilangan
+    const questions = [
+      {
+        id: 1,
+        textId: 1,
+        subtopic: "Konversi Bobot & Rasio Kopi",
+        type: "mcq",
+        typeLabel: "Pilihan Ganda Tunggal",
+        prompt: "Berdasarkan data tahapan pengolahan panen pada Teks 1, berapakah total bobot biji kopi sangrai (<em>roasted bean</em>) untuk Kategori Reguler yang dihasilkan pada musim panen tersebut?",
+        options: [
+          { key: "A", text: "306 kg" },
+          { key: "B", text: "480 kg" },
+          { key: "C", text: "510 kg" },
+          { key: "D", text: "576 kg" },
+          { key: "E", text: "600 kg" }
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 2,
+        textId: 1,
+        subtopic: "Konversi Bobot & Rasio Kopi",
+        type: "matrix",
+        typeLabel: "Pilihan Ganda Kompleks (Tabel Benar/Salah)",
+        prompt: "Berdasarkan proses konversi dan pemilahan mutu kopi pada Teks 1, tentukan kebenaran dari setiap pernyataan berikut dengan memberi pilihan Benar atau Salah!",
+        statements: [
+          {
+            id: "2_1",
+            text: "Total bobot kopi yang menyusut dan hilang dari wujud buah kopi gelondong basah awal hingga selesai dipanggang adalah 3.984 kg.",
+            correct: "Benar"
+          },
+          {
+            id: "2_2",
+            text: "Jika seluruh biji kopi Kategori Premium dikemas rapi ke dalam wadah kedap udara berukuran 250 gram, maka kemasan yang dihasilkan sebanyak 1.224 kantong.",
+            correct: "Benar"
+          },
+          {
+            id: "2_3",
+            text: "Persentase bobot bersih biji kopi sangrai akhir terhadap total bobot panen buah kopi gelondong basah awal adalah 18,5%.",
+            correct: "Salah"
+          }
+        ]
+      },
+      {
+        id: 3,
+        textId: 2,
+        subtopic: "Diskon Ganda & Hadiah Belanja",
+        type: "mcq",
+        typeLabel: "Pilihan Ganda Tunggal",
+        prompt: "Berapakah persentase diskon tunggal efektif yang setara dengan penerapan skema diskon bertingkat $30\\% + 20\\%$ pada swalayan tersebut?",
+        options: [
+          { key: "A", text: "40%" },
+          { key: "B", text: "44%" },
+          { key: "C", text: "46%" },
+          { key: "D", text: "50%" },
+          { key: "E", text: "54%" }
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 4,
+        textId: 2,
+        subtopic: "Diskon Ganda & Hadiah Belanja",
+        type: "short",
+        typeLabel: "Isian Singkat",
+        prompt: `Berapakah total pengeluaran riil (dalam ribuan rupiah) yang akhirnya dibayarkan oleh Bu Rina setelah memperhitungkan seluruh diskon bertingkat dan potongan nilai voucer cashback yang diterimanya?<br><span class="text-xs text-slate-500 font-normal">(Tuliskan angkanya saja, contoh jika Rp500.000 tuliskan 500)</span>`,
+        correctAnswer: "370",
+        acceptableAnswers: ["370", "370000", "rp370.000", "rp 370.000"]
+      },
+      {
+        id: 5,
+        textId: 2,
+        subtopic: "Diskon Ganda & Hadiah Belanja",
+        type: "matrix",
+        typeLabel: "Pilihan Ganda Kompleks (Tabel Benar/Salah)",
+        prompt: "Berdasarkan rincian skema transaksi belanja Bu Rina pada Teks 2, tentukan kebenaran dari setiap pernyataan berikut!",
+        statements: [
+          {
+            id: "5_1",
+            text: "Total nominal penghematan dari potongan harga bertingkat yang diperoleh Bu Rina sebelum memperhitungkan cashback adalah Rp330.000.",
+            correct: "Benar"
+          },
+          {
+            id: "5_2",
+            text: "Jika Bu Rina menambah barang belanjaan lain dengan harga label awal Rp50.000, maka ia akan memperoleh tambahan satu lembar voucer cashback Rp25.000.",
+            correct: "Salah"
+          },
+          {
+            id: "5_3",
+            text: "Rasio perbandingan antara total nilai voucer cashback yang berhasil diperoleh terhadap total harga barang pada label awal adalah 1 : 15.",
+            correct: "Benar"
+          }
+        ]
+      },
+      {
+        id: 6,
+        textId: 3,
+        subtopic: "Distribusi Logistik FPB & Armada",
+        type: "mcq",
+        typeLabel: "Pilihan Ganda Tunggal",
+        prompt: "Berapakah jumlah paket sembako keluarga terbanyak yang dapat disusun oleh tim relawan agar setiap paket memiliki isi yang identik sama dan tidak menyisakan bahan di gudang?",
+        options: [
+          { key: "A", text: "84 paket" },
+          { key: "B", text: "126 paket" },
+          { key: "C", text: "144 paket" },
+          { key: "D", text: "168 paket" },
+          { key: "E", text: "252 paket" }
+        ],
+        correctAnswer: "D"
+      },
+      {
+        id: 7,
+        textId: 3,
+        subtopic: "Distribusi Logistik FPB & Armada",
+        type: "mcq",
+        typeLabel: "Pilihan Ganda Tunggal",
+        prompt: "Berdasarkan paket sembako keluarga terbanyak yang berhasil dibuat pada Soal 6, berapakah komposisi jumlah beras dan minyak goreng yang terdapat di dalam 1 paket sembako?",
+        options: [
+          { key: "A", text: "5 kg beras dan 2 liter minyak goreng" },
+          { key: "B", text: "5 kg beras dan 3 liter minyak goreng" },
+          { key: "C", text: "6 kg beras dan 3 liter minyak goreng" },
+          { key: "D", text: "6 kg beras dan 4 liter minyak goreng" },
+          { key: "E", text: "7 kg beras dan 4 liter minyak goreng" }
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 8,
+        textId: 3,
+        subtopic: "Distribusi Logistik FPB & Armada",
+        type: "short",
+        typeLabel: "Isian Singkat",
+        prompt: `Berapakah biaya transportasi minimum (dalam ribuan rupiah) yang harus dikeluarkan oleh posko untuk mengangkut seluruh paket sembako keluarga tersebut ke pos pelayanan?<br><span class="text-xs text-slate-500 font-normal">(Tuliskan angkanya saja, contoh jika Rp900.000 tuliskan 900)</span>`,
+        correctAnswer: "720",
+        acceptableAnswers: ["720", "720000", "rp720.000", "rp 720.000"]
+      },
+      {
+        id: 9,
+        textId: 4,
+        subtopic: "Alokasi Modal & Bagi Hasil Usaha",
+        type: "matrix",
+        typeLabel: "Pilihan Ganda Kompleks (Tabel Benar/Salah)",
+        prompt: "Berdasarkan aturan pembagian bagi hasil pada Teks 4, evaluasilah kebenaran dari setiap pernyataan berikut!",
+        statements: [
+          {
+            id: "9_1",
+            text: "Besarnya modal awal yang disetorkan oleh Bagas pada pendirian usaha katering adalah Rp36.000.000.",
+            correct: "Benar"
+          },
+          {
+            id: "9_2",
+            text: "Alokasi dana cadangan operasional yang disisihkan dari laba bersih tahun pertama adalah sebesar Rp8.000.000.",
+            correct: "Benar"
+          },
+          {
+            id: "9_3",
+            text: "Total bagian laba yang diterima oleh Citra pada penutupan tahun buku pertama adalah Rp14.400.000.",
+            correct: "Salah"
+          }
+        ]
+      },
+      {
+        id: 10,
+        textId: 4,
+        subtopic: "Alokasi Modal & Bagi Hasil Usaha",
+        type: "mcq",
+        typeLabel: "Pilihan Ganda Tunggal",
+        prompt: "Berapakah total akumulasi keuntungan (gabungan insentif manajemen dan dividen modal) yang diterima oleh Arya pada penutupan tahun pertama?",
+        options: [
+          { key: "A", text: "Rp25.200.000" },
+          { key: "B", text: "Rp32.400.000" },
+          { key: "C", text: "Rp36.000.000" },
+          { key: "D", text: "Rp38.160.000" },
+          { key: "E", text: "Rp40.500.000" }
+        ],
+        correctAnswer: "D"
+      }
+    ];
+
+    // =========================================================================
+    // STORAGE ENGINE: INDEXEDDB (AUTOSAVE & 1 KALI PENGERJAAN)
+    // Sepenuhnya patuh pada aturan tanpa menggunakan localStorage
+    // =========================================================================
+    const DB_NAME = "RoadToSNBT2027_BAC_DB";
+    const STORE_NAME = "exam_session_store";
+    const DB_VERSION = 1;
+
+    function openDatabase() {
+      return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+          resolve(null);
+          return;
+        }
+        const request = window.indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: "id" });
+          }
+        };
+        request.onsuccess = (e) => resolve(e.target.result);
+        request.onerror = (e) => {
+          console.warn("IndexedDB error:", e.target.error);
+          resolve(null);
+        };
+      });
+    }
+
+    async function saveStateToDB(stateObj) {
+      try {
+        const db = await openDatabase();
+        if (!db) return;
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        const store = tx.objectStore(STORE_NAME);
+        store.put({ id: "current_user_exam", ...stateObj, savedAt: new Date().toISOString() });
+      } catch (err) {
+        console.warn("Gagal autosave:", err);
+      }
+    }
+
+    async function loadStateFromDB() {
+      try {
+        const db = await openDatabase();
+        if (!db) return null;
+        return new Promise((resolve) => {
+          const tx = db.transaction(STORE_NAME, "readonly");
+          const store = tx.objectStore(STORE_NAME);
+          const req = store.get("current_user_exam");
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => resolve(null);
+        });
+      } catch (err) {
+        console.warn("Gagal load autosave:", err);
+        return null;
+      }
+    }
+
+    // =========================================================================
+    // STATE APLIKASI
+    // =========================================================================
+    let currentQuestionIndex = 0;
+    let studentName = "";
+    let studentClass = "";
+    let remainingTimerSeconds = SYSTEM_CONFIG.EXAM_DURATION_SECONDS;
+    let timerInterval = null;
+    let isExamFinished = false;
+    let isExamInProgress = false;
+
+    // Data penyimpanan respon user
+    const userAnswers = {};
+    questions.forEach(q => {
+      if (q.type === "matrix") {
+        userAnswers[q.id] = {
+          answered: false,
+          isCorrect: false,
+          subAnswers: {} // { "2_1": { chosen: 'Benar', isCorrect: true } }
+        };
+      } else {
+        userAnswers[q.id] = {
+          answered: false,
+          isCorrect: false,
+          userChoice: null
+        };
+      }
+    });
+
+    window.onload = async function() {
+      // 1. Cek Deadline Periode Ujian
+      const deadlineCheck = checkExamPeriod();
+      if (!deadlineCheck.allowed) {
+        renderDeadlineNotice(deadlineCheck);
+      }
+
+      // 2. Cek apakah siswa sudah pernah mengerjakan (1 Kali Pengerjaan) atau ada sesi tersimpan
+      const savedSession = await loadStateFromDB();
+      if (savedSession) {
+        if (savedSession.isExamFinished) {
+          // Kasus: Siswa sudah selesai mengerjakan sebelumnya -> Kunci ke Halaman Hasil Saja
+          restoreCompletedExamView(savedSession);
+          return;
+        } else if (savedSession.isExamInProgress && savedSession.remainingTimerSeconds > 0) {
+          // Kasus: Sesi belum selesai (terputus di tengah jalan) -> Munculkan opsi lanjutkan
+          showResumeSessionCard(savedSession);
+        }
+      }
+    };
+
+    /**
+     * Memeriksa apakah saat ini berada dalam rentang periode yang diizinkan
+     */
+    function checkExamPeriod() {
+      if (!SYSTEM_CONFIG.ENABLE_DEADLINE_CHECK) return { allowed: true };
+      
+      const now = new Date();
+      const start = new Date(SYSTEM_CONFIG.DEADLINE_START);
+      const end = new Date(SYSTEM_CONFIG.DEADLINE_END);
+
+      if (now < start) {
+        return {
+          allowed: false,
+          status: "before",
+          message: "Latihan belum dibuka. Periode pengerjaan baru akan dimulai pada 6 Oktober 2026 pukul 15:00 WIB."
+        };
+      }
+      if (now > end) {
+        return {
+          allowed: false,
+          status: "after",
+          message: "Periode latihan telah berakhir. Sesi pengerjaan ditutup pada 11 Oktober 2026 pukul 23:59 WIB."
+        };
+      }
+      return { allowed: true };
+    }
+
+    function renderDeadlineNotice(info) {
+      const banner = document.getElementById('deadlineNoticeBanner');
+      const startBtn = document.getElementById('btnStartExam');
+      if (banner) {
+        banner.className = "p-4 bg-amber-50 border-b border-amber-200 text-amber-900 text-xs sm:text-sm font-semibold flex items-center gap-3";
+        banner.innerHTML = `
+          <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg flex-shrink-0"></i>
+          <span>${info.message}</span>
+        `;
+        banner.classList.remove('hidden');
+      }
+      if (startBtn) {
+        startBtn.disabled = true;
+        startBtn.classList.add('opacity-50', 'cursor-not-allowed', 'bg-slate-400', 'hover:bg-slate-400');
+        startBtn.innerHTML = `<span>Akses Latihan Ditutup Sesuai Periode</span>`;
+      }
+    }
+
+    function showResumeSessionCard(saved) {
+      const card = document.getElementById('resumeSessionCard');
+      const details = document.getElementById('resumeSessionDetails');
+      const nameInput = document.getElementById('studentNameInput');
+      const classSelect = document.getElementById('studentClassSelect');
+
+      if (card && details) {
+        const mins = Math.floor(saved.remainingTimerSeconds / 60).toString().padStart(2, '0');
+        const secs = (saved.remainingTimerSeconds % 60).toString().padStart(2, '0');
+        details.innerText = `Atas nama: ${saved.studentName} (${saved.studentClass}) • Sisa Waktu: ${mins}:${secs} • Nomor Terakhir: #${saved.currentQuestionIndex + 1}`;
+        card.classList.remove('hidden');
+      }
+
+      if (nameInput && saved.studentName) nameInput.value = saved.studentName;
+      if (classSelect && saved.studentClass) classSelect.value = saved.studentClass;
+    }
+
+    function startExercise() {
+      const deadlineCheck = checkExamPeriod();
+      if (!deadlineCheck.allowed) {
+        showCustomAlert("Akses Belum/Tidak Tersedia", deadlineCheck.message);
+        return;
+      }
+
+      const nameInput = document.getElementById('studentNameInput');
+      const classSelect = document.getElementById('studentClassSelect');
+      
+      const enteredName = nameInput ? nameInput.value.trim() : "";
+      const selectedClass = classSelect ? classSelect.value.trim() : "";
+
+      if (!enteredName) {
+        showCustomAlert("Nama Lengkap Wajib Diisi", "Silakan masukkan Nama Lengkap Anda terlebih dahulu sebelum memulai latihan.");
+        if (nameInput) nameInput.focus();
+        return;
+      }
+
+      if (!selectedClass) {
+        showCustomAlert("Pilihan Kelas Wajib Dipilih", "Silakan pilih Kelas Anda (12 IPA 1, 12 IPA 2, atau 12 IPS 1) sebelum memulai latihan.");
+        if (classSelect) classSelect.focus();
+        return;
+      }
+
+      studentName = enteredName;
+      studentClass = selectedClass;
+      remainingTimerSeconds = SYSTEM_CONFIG.EXAM_DURATION_SECONDS;
+      isExamInProgress = true;
+      isExamFinished = false;
+
+      // Update badge identitas di bar navigasi atas
+      const headerInfo = document.getElementById('headerStudentInfo');
+      if (headerInfo) {
+        headerInfo.innerText = `${studentName} (${studentClass})`;
+      }
+      
+      // Transisi tampilan
+      document.getElementById('welcomeSection').classList.add('hidden');
+      document.getElementById('examSection').classList.remove('hidden');
+      document.getElementById('headerProgressContainer').classList.remove('hidden');
+      document.getElementById('headerProgressContainer').classList.add('flex');
+
+      // Mulai timer countdown 15 menit
+      startCountdownTimer();
+
+      // Render soal
+      renderQuestionNav();
+      renderCurrentQuestion();
+
+      // Simpan kondisi awal
+      triggerAutosave();
+    }
+
+    async function resumeExistingExam() {
+      const saved = await loadStateFromDB();
+      if (!saved) return;
+
+      studentName = saved.studentName;
+      studentClass = saved.studentClass;
+      remainingTimerSeconds = Math.max(1, saved.remainingTimerSeconds);
+      currentQuestionIndex = saved.currentQuestionIndex || 0;
+      isExamInProgress = true;
+      isExamFinished = false;
+
+      // Restore userAnswers object
+      if (saved.userAnswers) {
+        Object.keys(saved.userAnswers).forEach(k => {
+          userAnswers[k] = saved.userAnswers[k];
+        });
+      }
+
+      // Update badge identitas
+      const headerInfo = document.getElementById('headerStudentInfo');
+      if (headerInfo) {
+        headerInfo.innerText = `${studentName} (${studentClass})`;
+      }
+
+      document.getElementById('welcomeSection').classList.add('hidden');
+      document.getElementById('examSection').classList.remove('hidden');
+      document.getElementById('headerProgressContainer').classList.remove('hidden');
+      document.getElementById('headerProgressContainer').classList.add('flex');
+
+      startCountdownTimer();
+      renderQuestionNav();
+      renderCurrentQuestion();
+    }
+
+    // =========================================================================
+    // TIMER ENGINE: 15 MENIT COUNTDOWN
+    // =========================================================================
+    function startCountdownTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      updateTimerDisplay();
+
+      timerInterval = setInterval(() => {
+        remainingTimerSeconds--;
+        updateTimerDisplay();
+
+        // Autosave setiap 5 detik
+        if (remainingTimerSeconds % 5 === 0) {
+          triggerAutosave();
+        }
+
+        // Ketika waktu 15 menit habis
+        if (remainingTimerSeconds <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          handleExamTimeOut();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(Math.max(0, remainingTimerSeconds) / 60).toString().padStart(2, '0');
+      const secs = (Math.max(0, remainingTimerSeconds) % 60).toString().padStart(2, '0');
+      const timerElem = document.getElementById('testTimer');
+      const timerBox = document.getElementById('timerContainer');
+      const timerIcon = document.getElementById('timerIcon');
+
+      if (timerElem) timerElem.innerText = `${mins}:${secs}`;
+
+      // Peringatan visual jika waktu tersisa di bawah 2 menit
+      if (remainingTimerSeconds <= 120 && timerBox) {
+        timerBox.className = "flex items-center space-x-2 bg-rose-50 text-rose-700 px-3 py-1.5 rounded-lg border border-rose-300 text-xs sm:text-sm font-bold tracking-wider timer-warning";
+        if (timerIcon) timerIcon.className = "fa-solid fa-triangle-exclamation text-rose-600";
+      }
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function handleExamTimeOut() {
+      showCustomAlert(
+        "Waktu 15 Menit Telah Habis",
+        "Waktu pengerjaan Anda telah selesai. Jawaban Anda akan otomatis tersimpan dan skor akhir akan segera ditampilkan.",
+        () => {
+          finishExam(true); // true = akibat waktu habis
+        }
+      );
+    }
+
+    function triggerAutosave() {
+      if (isExamFinished) return;
+
+      const stateSnapshot = {
+        studentName: studentName,
+        studentClass: studentClass,
+        remainingTimerSeconds: remainingTimerSeconds,
+        currentQuestionIndex: currentQuestionIndex,
+        userAnswers: userAnswers,
+        isExamInProgress: true,
+        isExamFinished: false
+      };
+
+      saveStateToDB(stateSnapshot);
+
+      // Flash efek autosave kecil di header
+      const indicator = document.getElementById('autosaveIndicator');
+      if (indicator) {
+        indicator.classList.add('bg-emerald-50', 'text-emerald-700');
+        setTimeout(() => {
+          indicator.classList.remove('bg-emerald-50', 'text-emerald-700');
+        }, 800);
+      }
+    }
+
+    function renderQuestionNav() {
+      const navContainer = document.getElementById('questionNumberNav');
+      navContainer.innerHTML = '';
+
+      questions.forEach((q, idx) => {
+        const state = userAnswers[q.id];
+        const btn = document.createElement('button');
+        btn.id = `nav-bubble-${idx}`;
+        btn.setAttribute('type', 'button');
+        
+        let bgClasses = "bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200";
+        if (state.answered) {
+          if (state.isCorrect) {
+            bgClasses = "bg-emerald-500 text-white font-bold border-emerald-600 shadow-xs";
+          } else {
+            bgClasses = "bg-rose-500 text-white font-bold border-rose-600 shadow-xs";
+          }
+        }
+
+        const ringClass = (idx === currentQuestionIndex) ? "ring-2 ring-blue-600 ring-offset-2" : "";
+
+        btn.className = `h-10 w-full rounded-xl border flex items-center justify-center text-sm font-semibold transition-all ${bgClasses} ${ringClass}`;
+        btn.innerHTML = `<span>${q.id}</span>`;
+        btn.onclick = () => jumpToQuestion(idx);
+
+        navContainer.appendChild(btn);
+      });
+    }
+
+    function jumpToQuestion(index) {
+      if (index < 0 || index >= questions.length) return;
+      currentQuestionIndex = index;
+      renderQuestionNav();
+      renderCurrentQuestion();
+      triggerAutosave();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function navigateQuestion(step) {
+      const nextIdx = currentQuestionIndex + step;
+      if (nextIdx >= 0 && nextIdx < questions.length) {
+        jumpToQuestion(nextIdx);
+      }
+    }
+
+    function renderCurrentQuestion() {
+      const q = questions[currentQuestionIndex];
+      const text = textsData[q.textId];
+      const state = userAnswers[q.id];
+
+      // Update Stimulus Teks Kiri
+      document.getElementById('passageBadge').innerText = text.tag;
+      document.getElementById('passageTitle').innerText = text.title;
+      document.getElementById('passageContent').innerHTML = text.content;
+
+      // Update Header Soal Kanan
+      document.getElementById('questionNumBadge').innerText = q.id;
+      document.getElementById('questionTypeBadge').innerText = q.typeLabel;
+
+      // Update Status Badge Kanan
+      const statusBadge = document.getElementById('questionStatusIndicator');
+      if (!state.answered) {
+        statusBadge.className = "text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600";
+        statusBadge.innerHTML = `<i class="fa-regular fa-circle mr-1"></i>Belum Dijawab`;
+      } else if (state.isCorrect) {
+        statusBadge.className = "text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800";
+        statusBadge.innerHTML = `<i class="fa-solid fa-check mr-1"></i>Telah Dijawab (Benar)`;
+      } else {
+        statusBadge.className = "text-xs font-semibold px-2.5 py-1 rounded-md bg-rose-100 text-rose-800";
+        statusBadge.innerHTML = `<i class="fa-solid fa-xmark mr-1"></i>Telah Dijawab (Salah)`;
+      }
+
+      // Update Prompt
+      document.getElementById('questionPrompt').innerHTML = q.prompt;
+
+      // Nav Buttons State
+      document.getElementById('btnPrev').disabled = (currentQuestionIndex === 0);
+      document.getElementById('btnPrev').classList.toggle('opacity-40', currentQuestionIndex === 0);
+      document.getElementById('btnPrev').classList.toggle('cursor-not-allowed', currentQuestionIndex === 0);
+
+      const nextBtn = document.getElementById('btnNext');
+      if (currentQuestionIndex === questions.length - 1) {
+        nextBtn.innerHTML = `<span>Review & Selesai</span> <i class="fa-solid fa-flag-checkered text-xs"></i>`;
+        nextBtn.onclick = confirmFinishExam;
+      } else {
+        nextBtn.innerHTML = `<span>Selanjutnya</span> <i class="fa-solid fa-chevron-right text-xs"></i>`;
+        nextBtn.onclick = () => navigateQuestion(1);
+      }
+
+      // Render Pilihan Jawaban
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+
+      if (q.type === "mcq") {
+        const listWrapper = document.createElement('div');
+        listWrapper.className = "space-y-3";
+
+        q.options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          const isUserPick = (state.userChoice === opt.key);
+
+          // Sesuai aturan: hanya terlihat hijau (benar) atau merah (salah), pembahasan & kunci TIDAK dibocorkan
+          let styleClass = "border-slate-200 hover:border-blue-400 bg-white hover:bg-blue-50/50 text-slate-800";
+          let badgeIcon = `<span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center mr-3 border border-slate-200">${opt.key}</span>`;
+
+          if (state.answered) {
+            btn.disabled = true;
+            btn.classList.add('cursor-not-allowed');
+
+            if (isUserPick) {
+              if (state.isCorrect) {
+                styleClass = "bg-emerald-600 border-emerald-600 text-white font-semibold shadow-sm";
+                badgeIcon = `<span class="w-7 h-7 rounded-lg bg-white/20 text-white font-bold text-xs flex items-center justify-center mr-3"><i class="fa-solid fa-check"></i></span>`;
+              } else {
+                styleClass = "bg-rose-600 border-rose-600 text-white font-semibold shadow-sm";
+                badgeIcon = `<span class="w-7 h-7 rounded-lg bg-white/20 text-white font-bold text-xs flex items-center justify-center mr-3"><i class="fa-solid fa-xmark"></i></span>`;
+              }
+            } else {
+              styleClass = "bg-slate-50 border-slate-200 text-slate-400 opacity-60";
+            }
+          }
+
+          btn.className = `w-full text-left p-3.5 sm:p-4 rounded-xl border flex items-center transition-all ${styleClass}`;
+          btn.innerHTML = `
+            ${badgeIcon}
+            <span class="text-sm flex-grow">${opt.text}</span>
+          `;
+
+          // Hanya bisa diklik 1 kali
+          if (!state.answered) {
+            btn.onclick = () => handleMcqSelection(q, opt.key);
+          }
+
+          listWrapper.appendChild(btn);
+        });
+
+        optionsContainer.appendChild(listWrapper);
+
+      } else if (q.type === "short") {
+        const shortWrapper = document.createElement('div');
+        shortWrapper.className = "space-y-4 max-w-lg";
+
+        const inputGroup = document.createElement('div');
+        inputGroup.className = "relative";
+
+        let inputClass = "border-slate-300 focus:ring-2 focus:ring-blue-600 bg-white text-slate-900";
+        let feedbackHtml = "";
+
+        if (state.answered) {
+          if (state.isCorrect) {
+            inputClass = "border-emerald-500 bg-emerald-50 text-emerald-900 font-bold";
+            feedbackHtml = `
+              <div class="mt-2 text-xs font-semibold text-emerald-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-check text-sm"></i>
+                <span>Jawaban Anda Benar (Terkunci)</span>
+              </div>
+            `;
+          } else {
+            inputClass = "border-rose-500 bg-rose-50 text-rose-900 font-bold";
+            feedbackHtml = `
+              <div class="mt-2 text-xs font-semibold text-rose-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-xmark text-sm"></i>
+                <span>Jawaban Anda Kurang Tepat (Terkunci)</span>
+              </div>
+            `;
+          }
+        }
+
+        inputGroup.innerHTML = `
+          <div class="flex items-center gap-2">
+            <input type="text" id="shortInput-${q.id}" ${state.answered ? 'disabled' : ''}
+              value="${state.userChoice || ''}" placeholder="Tuliskan angka jawaban Anda..."
+              class="w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all ${inputClass}">
+            ${!state.answered ? `
+              <button onclick="handleShortAnswerSubmit(${q.id})" class="flex-shrink-0 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-xs transition-colors">
+                Kirim Jawaban
+              </button>
+            ` : ''}
+          </div>
+          ${feedbackHtml}
+        `;
+
+        shortWrapper.appendChild(inputGroup);
+        optionsContainer.appendChild(shortWrapper);
+
+      } else if (q.type === "matrix") {
+        const tableWrapper = document.createElement('div');
+        tableWrapper.className = "overflow-hidden rounded-xl border border-slate-200";
+
+        let rowsHtml = "";
+        q.statements.forEach((stmt, sIdx) => {
+          const subState = state.subAnswers[stmt.id] || null;
+          const isAnswered = (subState !== null);
+
+          let benarBtnClass = "bg-white border-slate-300 text-slate-700 hover:bg-blue-50";
+          let salahBtnClass = "bg-white border-slate-300 text-slate-700 hover:bg-blue-50";
+
+          if (isAnswered) {
+            if (subState.chosen === "Benar") {
+              benarBtnClass = subState.isCorrect 
+                ? "bg-emerald-600 border-emerald-600 text-white font-bold" 
+                : "bg-rose-600 border-rose-600 text-white font-bold";
+              salahBtnClass = "bg-slate-100 border-slate-200 text-slate-400 opacity-50";
+            } else if (subState.chosen === "Salah") {
+              salahBtnClass = subState.isCorrect 
+                ? "bg-emerald-600 border-emerald-600 text-white font-bold" 
+                : "bg-rose-600 border-rose-600 text-white font-bold";
+              benarBtnClass = "bg-slate-100 border-slate-200 text-slate-400 opacity-50";
+            }
+          }
+
+          rowsHtml += `
+            <tr class="border-t border-slate-200 ${sIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50/60'}">
+              <td class="p-3.5 sm:p-4 text-xs sm:text-sm text-slate-800 leading-relaxed align-middle">
+                ${stmt.text}
+              </td>
+              <td class="p-2 sm:p-3 text-center align-middle w-24">
+                <button type="button" 
+                  ${isAnswered ? 'disabled' : ''} 
+                  onclick="handleMatrixChoice(${q.id}, '${stmt.id}', 'Benar')"
+                  class="px-3 py-1.5 rounded-lg border text-xs font-semibold w-full transition-all ${isAnswered ? 'cursor-not-allowed' : ''} ${benarBtnClass}">
+                  Benar
+                </button>
+              </td>
+              <td class="p-2 sm:p-3 text-center align-middle w-24">
+                <button type="button" 
+                  ${isAnswered ? 'disabled' : ''} 
+                  onclick="handleMatrixChoice(${q.id}, '${stmt.id}', 'Salah')"
+                  class="px-3 py-1.5 rounded-lg border text-xs font-semibold w-full transition-all ${isAnswered ? 'cursor-not-allowed' : ''} ${salahBtnClass}">
+                  Salah
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+
+        tableWrapper.innerHTML = `
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider">
+              <tr>
+                <th class="p-3.5 sm:p-4">Pernyataan Soal</th>
+                <th class="p-3 text-center w-24">Benar</th>
+                <th class="p-3 text-center w-24">Salah</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+        `;
+
+        optionsContainer.appendChild(tableWrapper);
+      }
+
+      // Re-trigger MathJax rendering
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    function handleMcqSelection(question, chosenKey) {
+      if (userAnswers[question.id].answered) return;
+
+      const isCorrect = (chosenKey === question.correctAnswer);
+      userAnswers[question.id] = {
+        answered: true,
+        isCorrect: isCorrect,
+        userChoice: chosenKey
+      };
+
+      triggerAutosave();
+      renderQuestionNav();
+      renderCurrentQuestion();
+    }
+
+    function handleShortAnswerSubmit(questionId) {
+      const q = questions.find(item => item.id === questionId);
+      if (!q || userAnswers[questionId].answered) return;
+
+      const input = document.getElementById(`shortInput-${questionId}`);
+      if (!input) return;
+
+      const rawVal = input.value.trim().toLowerCase().replace(/\s+/g, '');
+      if (rawVal === '') {
+        showCustomAlert("Mohon Masukkan Jawaban", "Silakan ketik angka jawaban Anda terlebih dahulu sebelum menekan tombol Kirim.");
+        return;
+      }
+
+      const cleanVal = rawVal.replace(/[^0-9]/g, '');
+      const isCorrect = (cleanVal === q.correctAnswer || q.acceptableAnswers.includes(rawVal) || rawVal === q.correctAnswer);
+
+      userAnswers[questionId] = {
+        answered: true,
+        isCorrect: isCorrect,
+        userChoice: input.value.trim()
+      };
+
+      triggerAutosave();
+      renderQuestionNav();
+      renderCurrentQuestion();
+    }
+
+    function handleMatrixChoice(questionId, statementId, chosenVal) {
+      const q = questions.find(item => item.id === questionId);
+      if (!q) return;
+
+      const state = userAnswers[questionId];
+      if (state.subAnswers[statementId]) return;
+
+      const stmt = q.statements.find(s => s.id === statementId);
+      const isCorrect = (stmt.correct === chosenVal);
+
+      state.subAnswers[statementId] = {
+        chosen: chosenVal,
+        isCorrect: isCorrect
+      };
+
+      const allDone = q.statements.every(s => state.subAnswers[s.id] !== undefined);
+      if (allDone) {
+        state.answered = true;
+        state.isCorrect = q.statements.every(s => state.subAnswers[s.id]?.isCorrect === true);
+      }
+
+      triggerAutosave();
+      renderQuestionNav();
+      renderCurrentQuestion();
+    }
+
+    function confirmFinishExam() {
+      let unansweredCount = 0;
+      questions.forEach(q => {
+        if (!userAnswers[q.id].answered) unansweredCount++;
+      });
+
+      let msg = "Apakah Anda yakin ingin menyelesaikan latihan sekarang dan langsung melihat skor akhir beserta analisisnya?";
+      if (unansweredCount > 0) {
+        msg = `Masih ada ${unansweredCount} soal yang belum selesai Anda jawab. Apakah Anda tetap ingin mengakhiri latihan sekarang?`;
+      }
+
+      showConfirmDialog("Konfirmasi Selesai Latihan", msg, () => {
+        finishExam(false);
+      });
+    }
+
+    function finishExam(isTimeOut = false) {
+      stopTimer();
+      closeModal();
+      isExamFinished = true;
+      isExamInProgress = false;
+
+      // Hitung skor total rata (10 soal x 10 poin = 100 poin maksimal)
+      let correctTotal = 0;
+      let earnedPoints = 0;
+
+      questions.forEach(q => {
+        const state = userAnswers[q.id];
+        if (q.type === "matrix") {
+          let subCorrect = 0;
+          q.statements.forEach(stmt => {
+            if (state.subAnswers && state.subAnswers[stmt.id]?.isCorrect) {
+              subCorrect++;
+            }
+          });
+          const partialScore = (subCorrect / q.statements.length) * 10;
+          earnedPoints += partialScore;
+          if (subCorrect === q.statements.length) {
+            correctTotal++;
+          }
+        } else {
+          if (state.isCorrect) {
+            correctTotal++;
+            earnedPoints += 10;
+          }
+        }
+      });
+
+      const finalScore = Math.round(earnedPoints);
+      const incorrectTotal = 10 - correctTotal;
+      const accuracyPct = Math.round((correctTotal / 10) * 100);
+
+      // Hitung format sisa waktu
+      const remainingSecs = Math.max(0, remainingTimerSeconds);
+      const remMins = Math.floor(remainingSecs / 60).toString().padStart(2, '0');
+      const remSecs = (remainingSecs % 60).toString().padStart(2, '0');
+      const remainingTimeFormatted = isTimeOut ? "00:00 (Habis)" : `${remMins}:${remSecs}`;
+
+      // Buat Format Analisis Latihan Sesuai Ketentuan Soal
+      // subtopik .... (banyak benar/jumlah soal subtopik tersebut) | subtopik ....
+      const subtopicMap = {
+        "Konversi Bobot & Rasio Kopi": { correct: 0, total: 2 },
+        "Diskon Ganda & Hadiah Belanja": { correct: 0, total: 3 },
+        "Distribusi Logistik FPB & Armada": { correct: 0, total: 3 },
+        "Alokasi Modal & Bagi Hasil Usaha": { correct: 0, total: 2 }
+      };
+
+      questions.forEach(q => {
+        const st = userAnswers[q.id];
+        if (st && st.isCorrect && subtopicMap[q.subtopic]) {
+          subtopicMap[q.subtopic].correct++;
+        }
+      });
+
+      const analysisItems = Object.keys(subtopicMap).map(name => {
+        return `subtopik ${name} (${subtopicMap[name].correct}/${subtopicMap[name].total})`;
+      });
+      const formattedAnalysisString = analysisItems.join(" | ");
+
+      // Update Data Tampilan di Halaman Hasil
+      document.getElementById('resultStudentName').innerText = `${studentName} — Analisis Capaian Belajar`;
+      document.getElementById('resultStudentText').innerText = studentName;
+      document.getElementById('resultClassText').innerText = `Kelas: ${studentClass}`;
+      document.getElementById('totalScoreText').innerText = finalScore;
+      document.getElementById('correctCountText').innerText = correctTotal;
+      document.getElementById('incorrectCountText').innerText = incorrectTotal;
+      document.getElementById('accuracyPercentText').innerText = `${accuracyPct}%`;
+      document.getElementById('remainingTimeText').innerText = remainingTimeFormatted;
+
+      const previewElem = document.getElementById('recapFormatPreview');
+      if (previewElem) previewElem.innerText = formattedAnalysisString;
+
+      // Update Link WhatsApp Pengajar
+      const waBtn = document.getElementById('whatsappConsultBtn');
+      if (waBtn) {
+        const waText = encodeURIComponent(`Halo Kak Pengajar Brain Academy Bogor Permata, saya ${studentName} dari kelas ${studentClass}. Saya telah menyelesaikan Latihan Mingguan PM (Bilangan) dengan perolehan skor ${finalScore}/100 dan sisa waktu ${remainingTimeFormatted}. Hasil analisis: ${formattedAnalysisString}. Saya ingin berkonsultasi mengenai materi latihan.`);
+        waBtn.href = `https://wa.me/?text=${waText}`;
+      }
+
+      // Render kartu diagnostik
+      renderDiagnosticCards(subtopicMap);
+
+      // Simpan kondisi permanen 1 Kali Pengerjaan ke IndexedDB
+      const finalReportPayload = {
+        timestamp: UtilitiesFormatNow(),
+        namaSiswa: studentName,
+        kelas: studentClass,
+        nilai: finalScore,
+        jumlahBenar: correctTotal,
+        jumlahSalah: incorrectTotal,
+        sisaWaktu: remainingTimeFormatted,
+        analisisLatihan: formattedAnalysisString,
+        isExamFinished: true,
+        isExamInProgress: false,
+        userAnswers: userAnswers,
+        accuracyPct: accuracyPct
+      };
+
+      saveStateToDB(finalReportPayload);
+
+      // Kirim hasil ke Google Sheets melalui Apps Script di latar belakang
+      sendReportToGoogleSheet(finalReportPayload);
+
+      // Tampilkan Halaman Hasil
+      document.getElementById('examSection').classList.add('hidden');
+      document.getElementById('headerProgressContainer').classList.add('hidden');
+      document.getElementById('welcomeSection').classList.add('hidden');
+      document.getElementById('resultSection').classList.remove('hidden');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // =========================================================================
+    // KONEKSI GOOGLE APPS SCRIPT: PENGIRIMAN DATA KE SHEET PM2
+    // =========================================================================
+    function sendReportToGoogleSheet(report) {
+      const syncNotice = document.getElementById('sheetSyncNotice');
+      const syncIcon = document.getElementById('sheetSyncIcon');
+      const syncText = document.getElementById('sheetSyncText');
+
+      if (!SYSTEM_CONFIG.GOOGLE_SCRIPT_WEB_APP_URL || SYSTEM_CONFIG.GOOGLE_SCRIPT_WEB_APP_URL.includes("EXAMPLE_REPLACE")) {
+        if (syncNotice) {
+          syncNotice.className = "p-3.5 rounded-xl text-xs font-medium flex items-center justify-between bg-emerald-50 border border-emerald-200 text-emerald-800";
+          syncIcon.className = "fa-solid fa-circle-check text-emerald-600";
+          syncText.innerText = "Laporan pengerjaan lokal berhasil disimpan. (Web App Google Script siap dihubungkan melalui URL deploy).";
+        }
+        return;
+      }
+
+      const payload = {
+        timestamp: report.timestamp,
+        namaSiswa: report.namaSiswa,
+        kelas: report.kelas,
+        nilai: report.nilai,
+        jumlahBenar: report.jumlahBenar,
+        jumlahSalah: report.jumlahSalah,
+        sisaWaktu: report.sisaWaktu,
+        analisisLatihan: report.analisisLatihan
+      };
+
+      fetch(SYSTEM_CONFIG.GOOGLE_SCRIPT_WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        if (syncNotice) {
+          syncNotice.className = "p-3.5 rounded-xl text-xs font-medium flex items-center justify-between bg-emerald-50 border border-emerald-200 text-emerald-800";
+          syncIcon.className = "fa-solid fa-circle-check text-emerald-600";
+          syncText.innerText = "Laporan pengerjaan berhasil dicatat secara resmi ke Spreadsheet tab PM2.";
+        }
+      })
+      .catch((err) => {
+        console.warn("Gagal sinkronisasi ke spreadsheet:", err);
+        if (syncNotice) {
+          syncNotice.className = "p-3.5 rounded-xl text-xs font-medium flex items-center justify-between bg-amber-50 border border-amber-200 text-amber-800";
+          syncIcon.className = "fa-solid fa-triangle-exclamation text-amber-600";
+          syncText.innerText = "Laporan tersimpan di memori lokal. Pengiriman otomatis akan diulang saat koneksi stabil.";
+        }
+      });
+    }
+
+    function restoreCompletedExamView(saved) {
+      document.getElementById('welcomeSection').classList.add('hidden');
+      document.getElementById('examSection').classList.add('hidden');
+      document.getElementById('headerProgressContainer').classList.add('hidden');
+
+      document.getElementById('resultStudentName').innerText = `${saved.namaSiswa} — Analisis Capaian Belajar`;
+      document.getElementById('resultStudentText').innerText = saved.namaSiswa;
+      document.getElementById('resultClassText').innerText = `Kelas: ${saved.kelas}`;
+      document.getElementById('totalScoreText').innerText = saved.nilai;
+      document.getElementById('correctCountText').innerText = saved.jumlahBenar;
+      document.getElementById('incorrectCountText').innerText = saved.jumlahSalah;
+      document.getElementById('accuracyPercentText').innerText = `${saved.accuracyPct || 0}%`;
+      document.getElementById('remainingTimeText').innerText = saved.sisaWaktu;
+
+      const previewElem = document.getElementById('recapFormatPreview');
+      if (previewElem) previewElem.innerText = saved.analisisLatihan;
+
+      const syncNotice = document.getElementById('sheetSyncNotice');
+      if (syncNotice) {
+        syncNotice.className = "p-3.5 rounded-xl text-xs font-medium flex items-center justify-between bg-blue-50 border border-blue-200 text-blue-900";
+        document.getElementById('sheetSyncIcon').className = "fa-solid fa-circle-check text-blue-600";
+        document.getElementById('sheetSyncText').innerText = "Data hasil pengerjaan Anda telah tersimpan dan terekam di sistem Brain Academy.";
+      }
+
+      // Re-create subtopicMap from saved userAnswers
+      const subtopicMap = {
+        "Konversi Bobot & Rasio Kopi": { correct: 0, total: 2 },
+        "Diskon Ganda & Hadiah Belanja": { correct: 0, total: 3 },
+        "Distribusi Logistik FPB & Armada": { correct: 0, total: 3 },
+        "Alokasi Modal & Bagi Hasil Usaha": { correct: 0, total: 2 }
+      };
+
+      if (saved.userAnswers) {
+        questions.forEach(q => {
+          const st = saved.userAnswers[q.id];
+          if (st && st.isCorrect && subtopicMap[q.subtopic]) {
+            subtopicMap[q.subtopic].correct++;
+          }
+        });
+      }
+
+      renderDiagnosticCards(subtopicMap);
+      document.getElementById('resultSection').classList.remove('hidden');
+    }
+
+    function renderDiagnosticCards(subtopicMap) {
+      const container = document.getElementById('topicAnalysisContainer');
+      container.innerHTML = '';
+
+      const topicsMeta = [
+        {
+          name: "Konversi Bobot & Rasio Kopi",
+          tag: "Teks 1 (Soal 1 - 2)",
+          summary: "Menguji kecakapan menghitung penyusutan bertingkat panen kopi dan alokasi rasio mutu 3 : 5.",
+          adviceMastered: "Kekuatan analisis perbandingan rasio dan susut bertingkat Anda sangat solid. Pertahankan ketelitian saat konversi gram ke kilogram.",
+          adviceNeedHelp: "Perlu penguatan konsep persentase bertingkat. Susut 15% pemanggangan dihitung dari green bean (960 kg), bukan dari buah basah awal."
+        },
+        {
+          name: "Diskon Ganda & Hadiah Belanja",
+          tag: "Teks 2 (Soal 3 - 5)",
+          summary: "Menguji pemahaman diskon tunggal efektif 30% + 20% dan batas kelipatan voucer cashback.",
+          adviceMastered: "Hebat! Anda tidak terjebak pada penjumlahan langsung (30%+20%=50%). Logika perhitungan harga bertingkat Anda sudah matang.",
+          adviceNeedHelp: "Waspadai jebakan diskon bertingkat! Diskon 30% + 20% menghasilkan diskon efektif 44%. Konsultasikan trik formulanya dengan Guru Master."
+        },
+        {
+          name: "Distribusi Logistik FPB & Armada",
+          tag: "Teks 3 (Soal 6 - 8)",
+          summary: "Menguji penentuan paket terbanyak dengan FPB faktorisasi prima serta optimasi biaya armada transportasi.",
+          adviceMastered: "Sangat baik! Pemahaman FPB pembagian paket tanpa sisa dan logika pemilihan armada paling hemat Anda terbukti presisi.",
+          adviceNeedHelp: "Perdalam materi FPB untuk pengelompokan merata. Pada optimasi sewa armada, bandingkan efisiensi tarif per paket (Truk vs Pick-up)."
+        },
+        {
+          name: "Alokasi Modal & Bagi Hasil Usaha",
+          tag: "Teks 4 (Soal 9 - 10)",
+          summary: "Menguji pemisahan 10% dana cadangan operasional serta pembagian insentif aktif dan dividen modal 5:3:2.",
+          adviceMastered: "Luar biasa! Pemahaman Anda dalam membaca teks panjang berjenjang dan alur pembagian dividen kemitraan sangat akurat.",
+          adviceNeedHelp: "Perhatikan hierarki pengurangan laba. Laba bersih Rp80.000.000 wajib dipotong dana cadangan 10% dahulu sebelum dibagi ke dividen."
+        }
+      ];
+
+      topicsMeta.forEach(t => {
+        const data = subtopicMap[t.name] || { correct: 0, total: 1 };
+        const isMastered = (data.correct === data.total);
+        const cardBorder = isMastered ? "border-emerald-200 bg-emerald-50/30" : "border-amber-200 bg-amber-50/30";
+        const badgeColor = isMastered ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-900";
+        const badgeLabel = isMastered ? "✓ Penguasaan Sangat Baik" : "⚠️ Perlu Penguatan & Konsultasi";
+
+        const card = document.createElement('div');
+        card.className = `p-5 rounded-2xl border ${cardBorder} space-y-3`;
+        card.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">${t.tag}</span>
+              <h4 class="font-bold text-slate-900 text-base mt-0.5">subtopik ${t.name}</h4>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${badgeColor}">
+                ${badgeLabel}
+              </span>
+              <span class="text-xs font-bold text-slate-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs">
+                ${data.correct} / ${data.total} Benar
+              </span>
+            </div>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            ${t.summary}
+          </p>
+          <div class="bg-white p-3.5 rounded-xl border border-slate-200/80 text-xs sm:text-sm">
+            <span class="font-bold ${isMastered ? 'text-emerald-700' : 'text-amber-800'} block mb-1">
+              ${isMastered ? 'Catatan Apresiasi Pengajar:' : 'Rekomendasi Tindakan Konsultasi Pengajar:'}
+            </span>
+            <p class="text-slate-700 leading-relaxed">
+              ${isMastered ? t.adviceMastered : t.adviceNeedHelp}
+            </p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function UtilitiesFormatNow() {
+      const d = new Date();
+      const pad = (n) => n.toString().padStart(2, '0');
+      return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+
+    function showCustomAlert(title, message, onOk) {
+      document.getElementById('modalIconContainer').className = "w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-4 text-xl";
+      document.getElementById('modalIconContainer').innerHTML = `<i class="fa-solid fa-circle-info"></i>`;
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalMessage').innerText = message;
+      document.getElementById('modalBtnCancel').classList.add('hidden');
+      
+      const confirmBtn = document.getElementById('modalBtnConfirm');
+      confirmBtn.innerText = "Mengerti";
+      confirmBtn.onclick = () => {
+        closeModal();
+        if (typeof onOk === "function") onOk();
+      };
+
+      document.getElementById('customModal').classList.remove('hidden');
+    }
+
+    function showConfirmDialog(title, message, onConfirm) {
+      document.getElementById('modalIconContainer').className = "w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mb-4 text-xl";
+      document.getElementById('modalIconContainer').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>`;
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalMessage').innerText = message;
+      document.getElementById('modalBtnCancel').classList.remove('hidden');
+      
+      const confirmBtn = document.getElementById('modalBtnConfirm');
+      confirmBtn.innerText = "Ya, Selesaikan";
+      confirmBtn.onclick = onConfirm;
+
+      document.getElementById('customModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('customModal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
