@@ -1,4 +1,4 @@
-2<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -96,6 +96,9 @@
         <div id="headerStudentBadge" class="hidden md:flex items-center gap-2 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold">
           <i class="fa-solid fa-user-graduate text-blue-600"></i>
           <span id="headerStudentInfo">-</span>
+          <button type="button" onclick="openEditIdentityModal()" class="text-blue-600 hover:text-blue-800 ml-1 px-1.5 py-0.5 rounded hover:bg-blue-100 transition-colors text-[11px]" title="Ubah Nama Siswa atau Kelas jika ada salah ketik">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
         </div>
 
         <!-- Indikator Autosave Status -->
@@ -255,6 +258,17 @@
     <!-- ========================================== -->
     <section id="examSection" class="hidden w-full flex-col space-y-6">
       
+      <!-- Banner Notifikasi Auto-Resume Langsung -->
+      <div id="autoResumeNotice" class="hidden p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs sm:text-sm font-medium flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-cloud-arrow-down text-blue-600 text-base"></i>
+          <span id="autoResumeNoticeText">Sesi latihan Anda berhasil dipulihkan otomatis ke nomor terakhir.</span>
+        </div>
+        <button type="button" onclick="document.getElementById('autoResumeNotice').classList.add('hidden')" class="text-blue-500 hover:text-blue-800 text-xs">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
       <!-- Nomor Soal Navigation Header (Non-sequential access) -->
       <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 pb-3 border-b border-slate-100">
@@ -482,6 +496,46 @@
         </button>
         <button id="modalBtnConfirm" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">
           Ya, Lanjutkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ubah Identitas Siswa Tanpa Reset Ujian -->
+  <div id="editIdentityModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 transform transition-all space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-user-pen text-blue-600"></i>
+          <span>Ubah Identitas Siswa</span>
+        </h3>
+        <button onclick="closeEditIdentityModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-500">
+        Anda dapat memperbarui nama atau kelas tanpa menghilangkan nomor soal atau jawaban yang telah dipilih.
+      </p>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Siswa:</label>
+          <input type="text" id="editModalStudentName" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-blue-600">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Kelas:</label>
+          <select id="editModalStudentClass" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-blue-600 bg-white">
+            <option value="12 IPA 1">12 IPA 1</option>
+            <option value="12 IPA 2">12 IPA 2</option>
+            <option value="12 IPS 1">12 IPS 1</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+        <button onclick="closeEditIdentityModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50">
+          Batal
+        </button>
+        <button onclick="saveEditedIdentity()" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700">
+          Simpan Pembaruan
         </button>
       </div>
     </div>
@@ -752,9 +806,11 @@
     const DB_NAME = "RoadToSNBT2027_BAC_DB";
     const STORE_NAME = "exam_session_store";
     const DB_VERSION = 1;
+    let cachedDbInstance = null;
 
     function openDatabase() {
-      return new Promise((resolve, reject) => {
+      if (cachedDbInstance) return Promise.resolve(cachedDbInstance);
+      return new Promise((resolve) => {
         if (!window.indexedDB) {
           resolve(null);
           return;
@@ -766,7 +822,10 @@
             db.createObjectStore(STORE_NAME, { keyPath: "id" });
           }
         };
-        request.onsuccess = (e) => resolve(e.target.result);
+        request.onsuccess = (e) => {
+          cachedDbInstance = e.target.result;
+          resolve(cachedDbInstance);
+        };
         request.onerror = (e) => {
           console.warn("IndexedDB error:", e.target.error);
           resolve(null);
@@ -839,19 +898,36 @@
         renderDeadlineNotice(deadlineCheck);
       }
 
-      // 2. Cek apakah siswa sudah pernah mengerjakan (1 Kali Pengerjaan) atau ada sesi tersimpan
+      // 2. Cek apakah siswa sudah pernah mengerjakan atau ada sesi tersimpan
       const savedSession = await loadStateFromDB();
       if (savedSession) {
         if (savedSession.isExamFinished) {
-          // Kasus: Siswa sudah selesai mengerjakan sebelumnya -> Kunci ke Halaman Hasil Saja
+          // Kasus: Siswa sudah selesai mengerjakan sebelumnya -> Langsung Kunci ke Halaman Hasil
           restoreCompletedExamView(savedSession);
           return;
         } else if (savedSession.isExamInProgress && savedSession.remainingTimerSeconds > 0) {
-          // Kasus: Sesi belum selesai (terputus di tengah jalan) -> Munculkan opsi lanjutkan
-          showResumeSessionCard(savedSession);
+          // KETENTUAN BARU: Langsung masuk ke pengerjaan terakhir tanpa menunggu tombol klik
+          await resumeExistingExam(savedSession, true);
+          return;
         }
       }
+
+      // Pasang listener siklus browser untuk menjamin autosave tidak pernah hilang
+      setupLifecycleAutosave();
     };
+
+    /**
+     * Memastikan autosave terpanggil saat peramban ditutup, di-minimize, atau reload
+     */
+    function setupLifecycleAutosave() {
+      window.addEventListener('beforeunload', () => triggerAutosave());
+      window.addEventListener('pagehide', () => triggerAutosave());
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          triggerAutosave();
+        }
+      });
+    }
 
     /**
      * Memeriksa apakah saat ini berada dalam rentang periode yang diizinkan
@@ -969,38 +1045,100 @@
       triggerAutosave();
     }
 
-    async function resumeExistingExam() {
-      const saved = await loadStateFromDB();
+    async function resumeExistingExam(savedData = null, isDirectAutoResume = false) {
+      const saved = savedData || await loadStateFromDB();
       if (!saved) return;
 
-      studentName = saved.studentName;
-      studentClass = saved.studentClass;
+      studentName = saved.studentName || "";
+      studentClass = saved.studentClass || "";
       remainingTimerSeconds = Math.max(1, saved.remainingTimerSeconds);
-      currentQuestionIndex = saved.currentQuestionIndex || 0;
+      currentQuestionIndex = (typeof saved.currentQuestionIndex === 'number' && saved.currentQuestionIndex < questions.length) 
+        ? saved.currentQuestionIndex 
+        : 0;
       isExamInProgress = true;
       isExamFinished = false;
 
-      // Restore userAnswers object
+      // Restore userAnswers object secara menyeluruh
       if (saved.userAnswers) {
         Object.keys(saved.userAnswers).forEach(k => {
           userAnswers[k] = saved.userAnswers[k];
         });
       }
 
-      // Update badge identitas
+      // Update badge identitas di bar navigasi atas
       const headerInfo = document.getElementById('headerStudentInfo');
       if (headerInfo) {
         headerInfo.innerText = `${studentName} (${studentClass})`;
       }
 
+      // Transisi langsung ke workspace ujian
       document.getElementById('welcomeSection').classList.add('hidden');
+      document.getElementById('resultSection').classList.add('hidden');
       document.getElementById('examSection').classList.remove('hidden');
       document.getElementById('headerProgressContainer').classList.remove('hidden');
       document.getElementById('headerProgressContainer').classList.add('flex');
 
+      // Tampilkan banner konfirmasi auto-resume jika dipulihkan langsung saat buka browser
+      if (isDirectAutoResume) {
+        const resumeNotice = document.getElementById('autoResumeNotice');
+        const resumeNoticeText = document.getElementById('autoResumeNoticeText');
+        if (resumeNotice && resumeNoticeText) {
+          resumeNoticeText.innerText = `Halo ${studentName}! Sesi latihan Anda berhasil dipulihkan otomatis ke nomor #${currentQuestionIndex + 1} dengan sisa waktu yang tersimpan.`;
+          resumeNotice.classList.remove('hidden');
+          setTimeout(() => {
+            if (resumeNotice) resumeNotice.classList.add('hidden');
+          }, 8000);
+        }
+      }
+
       startCountdownTimer();
       renderQuestionNav();
       renderCurrentQuestion();
+      setupLifecycleAutosave();
+    }
+
+    function openEditIdentityModal() {
+      const nameField = document.getElementById('editModalStudentName');
+      const classField = document.getElementById('editModalStudentClass');
+      if (nameField) nameField.value = studentName;
+      if (classField && studentClass) classField.value = studentClass;
+      document.getElementById('editIdentityModal').classList.remove('hidden');
+    }
+
+    function closeEditIdentityModal() {
+      document.getElementById('editIdentityModal').classList.add('hidden');
+    }
+
+    function saveEditedIdentity() {
+      const nameField = document.getElementById('editModalStudentName');
+      const classField = document.getElementById('editModalStudentClass');
+
+      const newName = nameField ? nameField.value.trim() : "";
+      const newClass = classField ? classField.value.trim() : "";
+
+      if (!newName) {
+        showCustomAlert("Nama Lengkap Wajib Diisi", "Nama siswa tidak boleh kosong.");
+        return;
+      }
+
+      studentName = newName;
+      studentClass = newClass;
+
+      // Update badge di header ujian
+      const headerInfo = document.getElementById('headerStudentInfo');
+      if (headerInfo) {
+        headerInfo.innerText = `${studentName} (${studentClass})`;
+      }
+
+      // Sinkronkan ke form welcoming jika ada
+      const wName = document.getElementById('studentNameInput');
+      const wClass = document.getElementById('studentClassSelect');
+      if (wName) wName.value = studentName;
+      if (wClass) wClass.value = studentClass;
+
+      // Simpan perubahan nama ke autosave seketika tanpa mengubah nomor soal atau jawaban
+      triggerAutosave();
+      closeEditIdentityModal();
     }
 
     // =========================================================================
